@@ -8,16 +8,22 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
 
 
-    [SerializeField] private Canvas _settingsMenuCanvas;
+
+    [SerializeField] private PauseMenu _pauseMenu;
 
 
     private void Awake()
     {
-        _settingsMenuCanvas.enabled = false;
+        Instance = this;
     }
 
     public void OpenPauseMenu()
     {
-        Debug.Log("Open Pause Menu");
+        _pauseMenu.Open();
+    }
+
+    public void ClosePauseMenu()
+    {
+        _pauseMenu.Close();
     }
 }

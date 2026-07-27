@@ -5,17 +5,13 @@ using UnityEngine.UI;
 
 
 // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/api/UnityEngine.InputSystem.html
-public class ControlSettings : MonoBehaviour
+public class ControlSettingsPanel : SettingsPanel
 {
 
     [SerializeField] private InputActionReference _jumpAction;
     [SerializeField] private InputActionReference _sprintAction;
     [SerializeField] private InputActionReference _attackAction;
     [SerializeField] private InputActionReference _interactAction;
-
-    [SerializeField] private Button _openButton;
-    [SerializeField] private Button _closeButton;
-    [SerializeField] private GameObject _root;
 
     [Header("Rebind Key Buttons")]
     [SerializeField] private Button _jumpKeyButton;
@@ -45,10 +41,6 @@ public class ControlSettings : MonoBehaviour
 
     private void OnEnable()
     {
-        _openButton.onClick.AddListener(Open);
-        _closeButton.onClick.AddListener(Close);
-
-
         _jumpKeyButton.onClick.AddListener(RebindJump);
         _sprintKeyButton.onClick.AddListener(RebindSprint);
         _attackKeyButton.onClick.AddListener(RebindAttack);
@@ -57,24 +49,10 @@ public class ControlSettings : MonoBehaviour
 
     private void OnDisable()
     {
-        _openButton.onClick.RemoveListener(Open);
-        _closeButton.onClick.RemoveListener(Close);
-
-
         _jumpKeyButton.onClick.RemoveListener(RebindJump);
         _sprintKeyButton.onClick.RemoveListener(RebindSprint);
         _attackKeyButton.onClick.RemoveListener(RebindAttack);
         _interactKeyButton.onClick.RemoveListener(RebindInteract);
-    }
-
-    private void Open()
-    {
-        _root.SetActive(true);
-    }
-
-    private void Close()
-    {
-        _root.SetActive(false);
     }
 
 
@@ -111,7 +89,7 @@ public class ControlSettings : MonoBehaviour
         label.text = "?";
         keyButton.enabled = false;
 
-        InputManager.Instance.Rebind(inputAction, () => { keyButton.enabled = true; SetKeyLabel(label, inputAction.bindings[0]); });
+        InputManager.Instance.Rebind(inputAction, (key) => { keyButton.enabled = true; SetKeyLabel(label, inputAction.bindings[0]); });
     }
 
     private void RebindJump()

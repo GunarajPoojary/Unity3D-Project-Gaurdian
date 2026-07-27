@@ -15,7 +15,7 @@ public class InputManager : MonoBehaviour
 
     private InputActionMap _gameplayActionMap;
     private InputActionMap _uIActionMap;
-
+    private Action<string> _rebindCompleteAction;
 
     public event Action OnPausePerformed;
 
@@ -40,12 +40,12 @@ public class InputManager : MonoBehaviour
         }
     }
 
-
-    private void Init()
+    private void OnDestroy()
     {
-        _gameplayActionMap = _gameInputActions.FindActionMap("Gameplay");
-        _uIActionMap = _gameInputActions.FindActionMap("UI");
+        SaveBindings();
     }
+
+
 
 
 
@@ -76,17 +76,25 @@ public class InputManager : MonoBehaviour
     // }
 
 
-    public void Rebind(InputAction action, Action onComplete)
+    public void Rebind(InputAction action, Action<string> onComplete)
     {
         // Temporarily disable Action
         action.Disable();
 
+        _rebindCompleteAction += onComplete;
+
         action.PerformInteractiveRebinding()
                    .WithCancelingThrough("<Keyboard>/escape") // Avoid binding with Escape key
                                                               //    .WithControlsExcluding("<Mouse>/leftButton") // Also exclude LMB
-                   .OnCancel((_) => onComplete?.Invoke())
-                   .OnComplete((_) => onComplete?.Invoke())
+                   .OnCancel(HandleRebindComplete)
+                   .OnComplete(HandleRebindComplete)
                    .Start();
+    }
+
+    private void HandleRebindComplete(RebindingOperation operation)
+    {
+        _rebindCompleteAction?.Invoke(operation.selectedControl.displayName);
+        operation.Dispose();
     }
 
     public void EnableUIInput()
@@ -99,5 +107,42 @@ public class InputManager : MonoBehaviour
     {
         _uIActionMap.Disable();
         _gameInputActions.Enable();
+    }
+
+    public void DisableUIInput()
+    {
+        _uIActionMap.Disable();
+        _gameInputActions.Enable();
+    }
+
+    public void EnableGameplayInput()
+    {
+        _uIActionMap.Disable();
+        _gameInputActions.Enable();
+    }
+
+
+
+
+    private void Init()
+    {
+        LoadBindings();
+
+        _gameplayActionMap = _gameInputActions.FindActionMap("Gameplay");
+        _uIActionMap = _gameInputActions.FindActionMap("UI");
+    }
+
+    private void LoadBindings()
+    {
+        string rebind = PlayerPrefs.GetString("rebinds");
+
+        _gameInputActions.LoadBindingOverridesFromJson(rebind);
+    }
+
+    private void SaveBindings()
+    {
+        string rebind = _gameInputActions.SaveBindingOverridesAsJson();
+
+        PlayerPrefs.SetString("rebinds", rebind);
     }
 }
