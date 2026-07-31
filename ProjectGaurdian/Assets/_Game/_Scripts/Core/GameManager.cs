@@ -12,16 +12,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
-    private void OnEnable()
-    {
-        InputManager.Instance.OnPausePerformed += HandlePausePerformed;
-    }
-
-    private void OnDisable()
-    {
-        InputManager.Instance.OnPausePerformed -= HandlePausePerformed;
-    }
-
     private void Start()
     {
         EnterGameplayState();
@@ -54,14 +44,7 @@ public class GameManager : MonoBehaviour
 
 
 
-    private void HandlePausePerformed()
-    {
-        Debug.Log("Enter Pause Game State");
-
-        PauseGame();
-    }
-
-    private void PauseGame()
+    public void PauseGame()
     {
         // Enter the Pause state
         // Disable Gameplay Input
